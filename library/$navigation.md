@@ -97,6 +97,7 @@
     - [Hadoop环境搭建](?file=006-大数据/002-Hadoop/002-Hadoop环境搭建 "Hadoop环境搭建")
     - [Hadoop命令行操作](?file=006-大数据/002-Hadoop/003-Hadoop命令行操作 "Hadoop命令行操作")
     - [HadoopJavaAPI操作](?file=006-大数据/002-Hadoop/004-HadoopJavaAPI操作 "HadoopJavaAPI操作")
+    - [HDFS的原理性内容](?file=006-大数据/002-Hadoop/005-HDFS的原理性内容 "HDFS的原理性内容")
 
 ##### 扩展技术
 - [lombok](?file=007-扩展技术/001-lombok "lombok")
@@ -104,6 +105,7 @@
 - [Maven](?file=007-扩展技术/003-Maven "Maven")
 - [接口文档](?file=007-扩展技术/004-接口文档 "接口文档")
 - [JUnit](?file=007-扩展技术/005-JUnit "JUnit")
+- [git](?file=007-扩展技术/006-git "git")
 
 ##### 算法
 - [2009使数组连续的最小操作数](?file=008-算法/001-2009使数组连续的最小操作数 "2009使数组连续的最小操作数")
