@@ -57,7 +57,7 @@ async def root():
 **启动**
 
 ```bash
-uvicorn main.app \ #用于加载和运行你的应用程序的服务器 只支持http和websoket
+uvicorn main:app \ #用于加载和运行你的应用程序的服务器 只支持http和websoket
 --port 8080 \ #端口
 --reload #热加载，只能用于开发环境
 ```
@@ -360,7 +360,7 @@ async def play(video_id):
 **config.py**
 
 ```python
-from pydantic_setting import BaseSettings
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # debug模式
@@ -907,4 +907,280 @@ async def download_file(unique_name: str, share: str = Form()):
 ```
 
 #### 基于角色的权限控制
+
+```python
+ALL_USERS ={
+    'JACK':['admin','users'],
+    'rose':['admin','users'],
+    'tom': ['users'],
+    'jerry': ['users']
+}
+
+ALL_PERMISSIONS = {
+    'admin':['upload'],
+    'users':['visit','download'],
+}
+
+def get_user_token(user_name: str | None = Cookie(default=None)):
+    print(user_name)
+    if user_name is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="user_name is required")
+    return user_name
+
+def get_role_permission(role_names: List[str]):
+    permissions = []
+    for role_name in role_names:
+        for perm in ALL_PERMISSIONS[role_name]:
+            permissions.append(perm)
+    return permissions
+
+def get_user_permission(user_name: str = Depends(get_user_token)):
+    if user_name in ALL_USERS:
+        return get_role_permission(ALL_USERS[user_name])
+    return None
+
+
+def check_user(security_scopes:SecurityScopes,user_permission: str = Depends(get_user_permission)):
+    for scope in security_scopes.scopes:
+        # 检查路径接口需要的权限是否存在用户对应的所有权限
+        if scope not in user_permission:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="你没有权限执行该操作")
+```
+
+#### JWT
+
+```bash
+pip install pyjwt
+```
+
+**生成密钥**
+
+```bash
+openssl rand -hex 32
+```
+
+auth.py
+
+```python
+"""
+JWT 其实定义了一种基于 Token 的会话方式，也就是通过一种规则说明了
+使用这种Token的标准以及 Token 如何生成和解码
+我们就是通过代码来实现这个会话规则
+"""
+from datetime import datetime, timezone, timedelta
+
+import jwt
+from fastapi import Depends, HTTPException,status
+from fastapi.security import OAuth2PasswordBearer
+
+SECRET_KEY = 'a5343793350d75f4c326095ce8b9d735c5544d7a60bd29e71e07067eeb8358e4'
+ALGORITHM = 'HS256'
+ACCESS_TOKEN_EXPIRE = 30
+
+
+oauth2_schema = OAuth2PasswordBearer(tokenUrl="/login")
+
+def create_token(data:dict):
+    to_encode = data.copy()
+    to_encode.update({'exp': datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE)})
+    encode_jwt = jwt.encode(
+        to_encode, # 要通过Token传输的内容!!!不要放敏感信息
+        SECRET_KEY,# JWT签名的密钥
+        algorithm=ALGORITHM # JWT签名的算法
+    )
+    return encode_jwt
+def verify_token(token:str = Depends(oauth2_schema)):
+    try:
+        payload = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail='Token expired',headers={'WWW-Authenticate':'Bearer'})
+    return payload
+```
+
+pan.py
+
+```python
+@router.get("/send_token")
+async def send_token(response: Response):
+    data = {"username": "Jack"}
+    token = create_token(data)
+    return token
+
+@router.get("/get_token")
+async def get_token(data=Depends(verify_token)):
+    return data
+```
+
+#### 中间件
+
+```python
+# 第一道关卡：中间件能第一时间获取请求，根据需要对其处理
+@app.middleware('http')
+async def add_headers(request: Request, call_next):
+    print(f"获取到了请求路径：{request.url}")
+    response = await call_next(request)
+    return response
+
+# 最后的关卡：中间件在响应返回前对响应进行处理
+@app.middleware('http')
+async def index(request: Request,call_next):
+    response = await call_next(request)
+    print("获取到了响应结果："+response.headers['Content-Type'])
+    return response
+```
+
+
+
+```python
+import logging
+import time
+from collections import defaultdict
+
+from fastapi import Depends, FastAPI, Request, Response
+import logging
+
+from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+
+logger = logging.getLogger("uvicorn.access")
+logger.disabled = True
+def my_logger(message):
+    print(message)
+
+def tai_middleware(app: FastAPI):
+    # 打印每个请求所用时间
+    @app.middleware("http")
+    async def count_time(request: Request,call_next):
+        start_time = time.time()
+        response = await call_next(request)
+        response_time = time.time() - start_time
+        print(response_time)
+        return response
+
+    @app.middleware("http")
+    async def tai_logging(request: Request,call_next):
+        message = f"{request.client.host}:{request.client.port} {request.method} {request.url.path}"
+        my_logger(message)
+        response = await call_next(request)
+        return response
+
+    # 访问速率限制的中间件
+    class RateLimitMiddleware(BaseHTTPMiddleware):
+        def __init__(self, app: FastAPI):
+            super().__init__(app)
+            self.request_records: dict[str,float] = defaultdict(float)
+            self.counter = 0
+
+        async def dispatch(self, request: Request, call_next):
+            ip = request.client.host # 获取客户端的IP
+            current_time = time.time() # fastapi接收到客户端请求的时间
+            self.counter += 1
+            print(self.counter)
+            if current_time - self.request_records[ip] < 5:
+                return Response(content="超过访问限制",status_code=429)
+
+            response = await call_next(request)
+            self.request_records[ip] = current_time # 成功响应，就将请求ip和请求时间保存在字典
+            return response
+
+    app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=False, allow_methods=["*"], expose_headers=["*"])
+```
+
+
+
+#### lifespan加载服务
+
+```python
+@asynccontextmanager
+async def tai_init(app: FastAPI):
+    # 启动时执行的事件
+    print("Tai启动啦")
+    # logger_init() 启动日志服务
+    # db_init() 连接数据库
+    # service_close() 退出第三方服务
+    # send_email() 发送email给我们的程序维护者
+    yield print("我是生命周期事情，等待下一次被使用")
+    # 终止时执行的事情
+    # logger() 记录关闭日志
+    # db_close() 关闭数据库连接
+    # service_close() 退出第三方服务
+    # send_email() 发送email给我们的程序维护者
+    print("Tai关闭啦")
+
+app = FastAPI(
+    debug=config.DEBUGE_MODE,
+    lifespan=tai_init
+)
+
+```
+
+#### redis
+
+```bash
+pip install redis>=5.1.0 # 支持python3.12
+```
+
+**main.py**
+
+```python
+from database.redis import redis_connect
+
+@asynccontextmanager
+async def tai_init(app: FastAPI):
+    # 启动时执行的事件
+    print("Tai启动啦")
+    app.state.redis = await redis_connect()
+    # logger_init() 启动日志服务
+    # db_init() 连接数据库
+    # service_close() 退出第三方服务
+    # send_email() 发送email给我们的程序维护者
+    yield print("我是生命周期事情，等待下一次被使用")
+    # 终止时执行的事情
+    app.state.redis.close()
+    # logger() 记录关闭日志
+    # db_close() 关闭数据库连接
+    # service_close() 退出第三方服务
+    # send_email() 发送email给我们的程序维护者
+    print("Tai关闭啦")
+```
+
+```python
+# playground.py
+@router.get("/redis")
+async def redis_set(request: Request):
+    value = await request.app.state.redis.get('fastapi_redis')
+
+    # 如果没有被redis缓存
+    if value is None:
+        sleep(5)
+        hi = 'hey,redis!'
+        await request.app.state.redis.set(
+            'fastapi_redis', # 键名
+            hi,             # 键值
+            ex=60           # 多少秒过期
+        )
+        return hi
+
+    return value
+```
+
+#### WebSocket
+
+```python
+# 注意请求方法是websocket
+@router.websocket("/ws2")
+async def ws(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            # 接收信息
+            message = await websocket.receive_text()
+
+            # 输出信息
+            await websocket.send_text(message)
+    except WebSocketDisconnect:
+        print('websocket disconnect')
+
+```
 
