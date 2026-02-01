@@ -1,0 +1,26 @@
+<!-- FILEPATH: /e:/学习/AIGC教材/我做的教材/flask/templates/add.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>新增员工</title>
+    <link rel="stylesheet" href="/static/login.css">
+</head>
+<body>
+    <h1>新增员工</h1>
+    <form action="/add" method="POST">
+        <label for="name">姓名:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="age">年龄:</label>
+        <input type="number" id="age" name="age" required><br><br>
+        
+        <label for="position">职位:</label>
+        <input type="text" id="position" name="position" required><br><br>
+
+        <label for="position">ID:</label>
+        <input type="text" id="id" name="id" required><br><br>
+        
+        <input type="submit" value="提交">
+    </form>
+</body>
+</html>

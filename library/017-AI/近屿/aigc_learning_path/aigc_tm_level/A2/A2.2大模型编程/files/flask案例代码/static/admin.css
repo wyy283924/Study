@@ -1,0 +1,23 @@
+/* BEGIN: Table Styles */
+table {
+    width: 70%;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+/* div的样式跳到中间 */
+div {
+    text-align: center;
+}
+
+th {
+    background-color: blue;
+    color: white;
+}
+/* END: Table Styles */

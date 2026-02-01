@@ -1,0 +1,7 @@
+flask
+hashlib
+werkzeug
+moviepy
+pygame
+Pillow
+opencv-python

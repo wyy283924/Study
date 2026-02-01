@@ -1,0 +1,12 @@
+sparkdesk-api
+websocket-client
+openai
+markdown-it-py
+faiss-cpu
+langchain
+pymupdf
+numpy
+matplotlib
+python-dotenv
+tiktoken
+langchain-community

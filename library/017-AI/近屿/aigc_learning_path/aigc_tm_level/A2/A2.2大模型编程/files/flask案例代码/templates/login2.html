@@ -1,0 +1,22 @@
+<!--实现一个登陆界面，有用户名和密码两条输入项，和提交按钮。-->
+<!--当用户输入用户名和密码后，点击提交按钮,将用户名和密码post给后端-->
+<!--html的语言是中文-->
+<html lang="zh-CN">
+<head>
+  <title>登录</title>
+  <!--导入./static文件夹下的css-->
+  <link rel="stylesheet" href="/static/login.css">
+</head>
+<body>
+<form method="post">
+    <div class="mb-3">
+      <label for="exampleInputUsername1" class="form-label">用户名</label>
+      <input type="text" class="form-control" id="exampleInputUsername1" aria-describedby="usernameHelp" name="username">
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">密码</label>
+      <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+    </div>
+    <button type="submit" class="btn btn-primary">提交</button>
+</form>
+</body>

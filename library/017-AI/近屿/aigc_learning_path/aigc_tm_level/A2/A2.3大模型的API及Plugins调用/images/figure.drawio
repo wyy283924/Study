@@ -1,0 +1,123 @@
+<mxfile host="65bd71144e">
+    <diagram id="ZY3QWuuwUxDnngymNN-6" name="第 1 页">
+        <mxGraphModel dx="688" dy="864" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="1" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="21" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.017;entryY=0.659;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Comic Sans MS;fontSize=18;fontColor=#000000;" parent="1" source="9" target="8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+                    <mxGeometry x="30" y="580" width="830" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.017;entryY=0.105;entryDx=0;entryDy=0;entryPerimeter=0;fontFamily=Comic Sans MS;fontSize=18;fontColor=#000000;" parent="1" source="2" target="8" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;&lt;font style=&quot;&quot;&gt;User Query&lt;/font&gt;&lt;/b&gt;&lt;br&gt;（&lt;span style=&quot;background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace;&quot;&gt;请告诉我牛津大学软件学院院长的研究方向是什么？&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;）&lt;/span&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="224" y="440" width="380" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;span style=&quot;color: #a31515;&quot;&gt;剑桥大学的校长是马冬梅，马教授是一名计算机专业的教授，她的主要研究方向是自然语言处理&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="640" width="390" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: #a31515;&quot;&gt;牛津大学的软件学院院长是李磊，李教授是一名计算机专业的教授，他的主要研究方向是机器学习&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="770" width="410" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: #a31515;&quot;&gt;huts的医学院是中部地区最好的医学院，最擅长临床医学的研究&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="470" y="640" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: #a31515;&quot;&gt;wit有三万名学生&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="670" y="770" width="170" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: #a31515;&quot;&gt;hit有五万名学生&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="470" y="770" width="180" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="&lt;font face=&quot;Comic Sans MS&quot; style=&quot;font-size: 36px;&quot;&gt;Embedding&lt;br&gt;Model&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+                    <mxGeometry x="920" y="440" width="220" height="440" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="&lt;h1&gt;&lt;font style=&quot;font-size: 24px;&quot;&gt;Knowledge Base&lt;/font&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontSize=18;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="570" width="310" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&lt;font style=&quot;font-size: 36px;&quot;&gt;$$Vector_1$$&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1190" y="760" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&lt;font style=&quot;font-size: 36px;&quot;&gt;$$Vector_2$$&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1200" y="770" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&lt;font style=&quot;font-size: 36px;&quot;&gt;$$Vector_3$$&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1210" y="780" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&lt;font style=&quot;font-size: 36px;&quot;&gt;$$Vector_4$$&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1220" y="790" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: rgb(163, 21, 21);&quot;&gt;&lt;font style=&quot;font-size: 36px;&quot;&gt;$$Vector_5$$&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1230" y="800" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;font color=&quot;#0f0f0f&quot; style=&quot;font-size: 36px;&quot;&gt;$$Vector_{\mathbf{query}}$$&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="1200" y="450" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_2;align=left;labelPosition=right;pointerEvents=1;strokeColor=#000000;fontFamily=Comic Sans MS;fontSize=18;fontColor=#000000;rotation=-180;" parent="1" vertex="1">
+                    <mxGeometry x="1630" y="472.5" width="100" height="375" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; text-align: start;&quot;&gt;&lt;b&gt;牛津大学的软件学院院长是李磊，李教授是一名计算机专业的教授，他的主要研究方向是机器学习&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1760" y="555" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; text-align: start;&quot;&gt;&lt;b&gt;剑桥大学的校长是马冬梅，马教授是一名计算机专业的教授，她的主要研究方向是自然语言处理&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1760" y="675" width="370" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="&lt;h1&gt;&lt;font style=&quot;font-size: 36px;&quot; face=&quot;Times New Roman&quot;&gt;进行向量的相似性检索&lt;/font&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontFamily=Comic Sans MS;fontSize=18;fontColor=#0f0f0f;" parent="1" vertex="1">
+                    <mxGeometry x="1464" y="590" width="190" height="120" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="c5UE8VvDXm8SjwB_Oqs2" name="第 2 页">
+        <mxGraphModel dx="448" dy="864" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-13" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="zIJyYw1aOJc4AEXaYWev-1" target="zIJyYw1aOJc4AEXaYWev-2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-1" value="&lt;h2&gt;任务定义&lt;/h2&gt;&lt;div&gt;&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div&gt;你可以调用下面列出的函数来辅助完成用户提出的问题，函数的描述如下&lt;/div&gt;&lt;div&gt;- div_func(a: float, b: float)：除法函数&lt;/div&gt;&lt;div&gt;- mul_func(a: float, b: float)：乘法函数&lt;/div&gt;&lt;div&gt;- chat_func(text: str)：聊天函数&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="70" y="150" width="510" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-12" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="zIJyYw1aOJc4AEXaYWev-2" target="zIJyYw1aOJc4AEXaYWev-3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-2" value="&lt;h2&gt;对话流程描述&lt;/h2&gt;&lt;div&gt;&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div&gt;动作: &amp;lt;你要调用的函数名称&amp;gt;&lt;/div&gt;&lt;div&gt;函数输入: &amp;lt;输入函数的值...&amp;gt;&lt;/div&gt;&lt;div&gt;观察: &amp;lt;函数的输出结果&amp;gt;&lt;/div&gt;&lt;div&gt;思考: &amp;lt;你对接下来的思考&amp;gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="155" y="350" width="340" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-7" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="zIJyYw1aOJc4AEXaYWev-3" target="zIJyYw1aOJc4AEXaYWev-4">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-3" value="&lt;h2&gt;用户输入&lt;/h2&gt;&lt;div&gt;&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;color: #a31515;&quot;&gt;请问：1.5 除以 2.5 再乘以 3.5 是多少？直接告诉我答案&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="122.5" y="580" width="405" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-8" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="zIJyYw1aOJc4AEXaYWev-4" target="zIJyYw1aOJc4AEXaYWev-5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-4" value="&lt;h2&gt;任务过程&lt;/h2&gt;&lt;div&gt;&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace; text-align: start;&quot;&gt;动作: div_func&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace; text-align: start;&quot;&gt;函数输入: 1.5, 2.5&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="155" y="740" width="340" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-9" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="zIJyYw1aOJc4AEXaYWev-5" target="zIJyYw1aOJc4AEXaYWev-6">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-5" value="&lt;h2&gt;观察输出&lt;/h2&gt;&lt;div&gt;&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace; text-align: start;&quot;&gt;观察: 0.6&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="155" y="910" width="340" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-11" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="zIJyYw1aOJc4AEXaYWev-6">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="325" y="720" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="580" y="1135"/>
+                            <mxPoint x="580" y="720"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="zIJyYw1aOJc4AEXaYWev-6" value="&lt;h2&gt;对当前状态与未来进行思考&lt;/h2&gt;&lt;div&gt;&lt;div style=&quot;color: rgb(59, 59, 59); background-color: rgb(255, 255, 255); font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 21px;&quot;&gt;&lt;div style=&quot;line-height: 21px;&quot;&gt;&lt;span style=&quot;font-family: &amp;quot;JetBrains Mono&amp;quot;, &amp;quot;MesloLGS NF&amp;quot;, &amp;quot;Fira code&amp;quot;, Consolas, 微软雅黑, &amp;quot;Courier New&amp;quot;, monospace; text-align: start;&quot;&gt;思考: 我将使用乘法函数将观察到的结果乘以3.5来得到最终答案。&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="155" y="1080" width="340" height="110" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

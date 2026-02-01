@@ -1,0 +1,29 @@
+{
+  "prog": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "question": "Steve puts $100 into the bank. Each year he earns 10% interest on the money in the account. How much money will be in the bank after 2 years?",
+        "rationale": "calculate the amount of money in the bank after 2 years. We first calculate the interest earned in the first year, which is $100 x 10% = $10. Then, we add this interest to the initial amount, giving us $100 + $10 = $110. Next, we calculate the interest earned in the second year, which is $110 x 10% = $11. Finally, we add this interest to the amount after the first year, giving us $110 + $11 = $121. Therefore, after 2 years, there will be $121 in the bank.",
+        "answer": "$121"
+      },
+      {
+        "question": "The time Juan takes to grab his lunch from his office and back is half the time he takes to read a book. If he has a 4000-page book, how many pages does he read in an hour if he takes 4 hours to move from his office to grab lunch?",
+        "gold_reasoning": "If Juan takes 4 hours to move from his office to grab lunch, moving from his office and back takes 2*4=<<4*2=8>>8 hours. The time Juan takes to grab his lunch from his office and back is half the time he takes to read a book, meaning he reads a book in 8*2=<<8*2=16>>16 hours. If he has a 4000-page book, he will read 4000\/16=<<4000\/16=250>>250 pages in an hour.",
+        "answer": "250"
+      },
+      {
+        "question": "Ann is baking cookies. She bakes three dozen oatmeal raisin cookies, two dozen sugar cookies, and four dozen chocolate chip cookies. Ann gives away two dozen oatmeal raisin cookies, 1.5 dozen sugar cookies, and 2.5 dozen chocolate chip cookies. How many total cookies does she keep?",
+        "gold_reasoning": "Ann had 3 dozen oatmeal cookies - 2 dozen = <<3-2=1>>1 dozen oatmeal cookies left. Ann had 2 dozen sugar cookies - 1.5 dozen = <<2-1.5=.5>>.5 dozen sugar cookies left. Ann had 4 dozen chocolate chip cookies - 2.5 dozen = 1.5 dozen chocolate chip cookies left. Ann has a total of 1 + .5 + 1.5 dozen cookies = <<1+.5+1.5=3>>3 dozen cookies. 3 dozen cookies is 3 *12 cookies = <<3*12=36>>36 cookies remaining.",
+        "answer": "36"
+      }
+    ],
+    "signature_instructions": "Given the fields `question`, produce the fields `answer`.",
+    "signature_prefix": "Answer:",
+    "extended_signature_instructions": "Given the fields `question`, produce the fields `answer`.",
+    "extended_signature_prefix": "Answer:"
+  }
+}

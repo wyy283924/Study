@@ -1,0 +1,34 @@
+<!--一个后台管理系统，里面有一个表格，每行信息是：姓名、年龄、收入。右侧有两个按钮，可以添加信息行和删除信息行。如果是添加信息行，可以输入名字、年龄、职位、编号-->
+<!--table里面根据-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理系统</title>
+    <link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+<table>
+<!--表头，分别是employee_dict的四个键-->
+    <tr>
+        <th>姓名</th>
+        <th>年龄</th>
+        <th>职位</th>
+        <th>编号</th>
+    </tr>
+<!--table里面动态根据传入的employee_dict来输入，用jinja2-->
+{% for a in employee_dict %}
+    <tr>
+        <td>{{ a.name }}</td>
+        <td>{{ a.age }}</td>
+        <td>{{ a.position }}</td>
+        <td>{{ a.id }}</td>
+    </tr>
+{% endfor %}
+</table>
+<!--新增两个标签，一个是增加，一个是删除-->
+<div>
+    <a href="/add">增加</a>
+    <a href="/delete">删除</a>
+</div>
+</body>

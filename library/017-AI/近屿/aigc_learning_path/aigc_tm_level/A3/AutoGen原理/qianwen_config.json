@@ -1,0 +1,7 @@
+[
+    {
+        "model": "qwen-turbo",
+        "api_key": "sk-8709f7ed33dc402a8a9885a1a8ee403e",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    }
+]

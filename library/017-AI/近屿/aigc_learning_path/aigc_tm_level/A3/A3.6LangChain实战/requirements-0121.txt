@@ -1,0 +1,11 @@
+langchain==0.3.13
+openai>=1.0
+chromadb
+langchain_experimental
+langchain-community==0.3.13
+faiss-cpu
+langgraph==0.2.62
+langchainhub==0.1.21
+tavily-python
+bs4
+langchain-openai

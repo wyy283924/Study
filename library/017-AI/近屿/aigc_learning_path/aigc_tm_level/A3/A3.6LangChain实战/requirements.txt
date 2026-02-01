@@ -1,0 +1,9 @@
+langchain
+openai
+semantic-kernel
+tiktoken
+chromadb
+langchain_experimental
+langchain-community
+faiss-cpu
+pydantic==1.10.14
