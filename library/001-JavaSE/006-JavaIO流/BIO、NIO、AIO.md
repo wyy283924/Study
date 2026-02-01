@@ -1,0 +1,1812 @@
+## 第一章 BIO、NIO、AIO课程介绍
+
+### 1.1 课程说明
+
+在Java的软件设计开发中，通信架构是不可避免的，我们在进行不同系统或者不同进程之间的数据交互，或者在高并发下的通信场景下都需要用到网络通信相关的技术，对于一些经验丰富的程序员来说，Java早期的网络通信架构存在一些缺陷，***其中最令人恼火的是基于性能低下的同步阻塞式的I/O通信（BIO)***，随着互联网开发下通信性能的高要求，Java在2002年开始支持了非阻塞式的I/O通信技术（NIO)。大多数读者在学习网络通信相关技术的时候，都只是接触到零碎的通信技术点，没有完整的技术体系架构，以至于对Java的通信场景总是没有清晰的解决方案。本次课程将通过大量清晰直接的案例从最基础的BlO式通信开始介绍到NIO、AIO，读者可以清晰的了解到阻塞、同步、异步的现象、概念和特征以及优缺点。本课程结合了大量的案例让读者可以快速了解每种通信架构的使用。
+
+### 1.2 本课程学习要求
+
++ 本课程不太适合完全0基础学员
++ 至少需要掌握：Java SE基础编程，如Java多线程，Java IO流编程，Java网络基础知识（如：IP，端口，协议），常用的Java设计模式要有一定的了解。
++ 能熟练掌握 JavaOOP 编程，有一定的编程思维。
+
+### 1.3 通信技术整体解决的问题
+
++ 局域网内的通信要求
++ 多系统间的底层消息传递机制
++ 高并发下，大数据量的通信场景需要，如netty
++ 游戏行业，无论是手游服务端，还是大型的网络游戏，Java语言都得到越来越广泛的应用
+
+## 第二章  Java的I/O演进之路
+
+### 2.1 I/O模型基本说明
+
+I/O模型：就是用什么样的通道或者说是通信模式和架构进行数据的传输和接收，很大程度上决定了程序通信的性能, Java共支持3种网络编程的I/O模型：BlO、 NIO.、AlO实际通信需求下，要根据不同的业务场景和性能需求决定选择不同的I/O模型
+
+### 2.2 I/O模型
+
+***Java BIO***
+
+同步并阻塞（传统阻塞型），服务器实现模式为一个连接一个线程，即客户端有连接请求时服务器端就需要启动一个线程进行处理，如果这个连接不做任何事情会造成不必要的线程开销***【简单示意图】***
+
+![3](img/3.png)
+
+***Java NIO***
+
+***Java NIO***：同步非阻塞，服务器实现模式为一个线程处理多个请求（连接），即客户端发送的连接请求都会注册到多路复用器上，多路复用器轮询到连接有I/O请求就进行处理***【简单示意图】***
+
+
+
+![4](img/4.png)
+
+***Java AIO***
+
+***Java AIO(NIO.2)：***异步异步非阻塞，服务器实现模式为一个有效请求一个线程，客户端的I/O请求都是由OS先完成了再通知服务器应用去启动线程进行处理，一般适用于连接数较多且连接时间较长的应用
+
+### 2.3 BIO、NIO、AIO适用场景分析
+
+1. ***BIO***方式适用于连接数目比小且固定的架构，这种方式对服务器资源要求比较高，并发局限于应用中，JDK1.4以前的唯一选择，但程序简单易理解。
+
+2. ***NIO***方式适用于连接数目多且连接比较短（轻操作）的架构，比如聊天服务器，弹幕系统，服务器间通讯等。编程比较复杂，JDK1 .4开始支持。
+
+3. ***AIO***方式使用于连接数目多且连接比较长（重操作）的架构，比如相册服务器，充分调用OS参与并发操作，编程比较复杂，JDK7开始支持。
+
+## 第三章 JAVA BIO深入剖析
+
+### 3.1 Java BIO基本介绍
+
++ Java BlO就是传统的Java IO编程，其相关的类和接口在java.io包中
++ BIO(blocking I/O)同步阻塞，服务器实现模式为一个连接一个线程，即客户端有连接请求时服务器端就需要启动一个线程进行处理，如果这个连接不做任何事情会造成不必要的线程开销，可以通过线程池机制改善（实现多个客户连接服务器）
+
+### 3.2 Java BIO工作机制
+
+![5](img/5.png)
+
+### 3.3 传统的BIO编程实例回顾
+
+网络编程的基本模型是Client/Server模型，也就是两个进程之间进行相互通信，其中服务端提供位置信（绑定IP地址和端口），客户端通过连接操作向服务端监听的端口地址发起连接请求，基于TCP协议下进行三次握手连接，连接成功后，双方通过网络套接字（Socket）进行通信。传统的同步阻塞模型开发中，服务端ServerSocket负责绑定IP地址，启动监听端口；客户端Socket负责发起连接操作。连接成功后，双方通过输入和输出流进行同步阻塞式通信。基于BIO模式下的通信，客户端-服务端是完全同步，完全藕合的。
+
+#### 服务端案例如下
+
+```java
+/**
+ * 目标：客户端发送消息，服务端接收消息
+ */
+public class Server {
+    public static void main(String[] args) {
+        try {
+            //1.定义一个ServerSocket对象进行服务端的端口注册
+            ServerSocket ss = new ServerSocket(9999);
+            //2.监听客户端的Socket连接请求
+            Socket socket = ss.accept();
+            //3.从socket管道中需要得到一个字节输入流对象
+            InputStream is = socket.getInputStream();
+            //4.把字节输入流包装成缓冲字符输入流
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String msg;
+            while((msg = br.readLine()) != null){
+                System.out.println("服务端接收到"+msg);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+***
+
+#### 客户端案例如下
+
+```java
+/**
+ * 客户端
+ */
+public class Client {
+    public static void main(String[] args) throws IOException {
+        //1.创建一个Socket对象请求服务端连接
+        Socket socket = new Socket("127.0.0.1",9999);
+        //2.从Socket对象中获取一个字节输出流
+        OutputStream os = socket.getOutputStream();
+        //3.把字节输出流包装成一个打印流
+        PrintStream ps = new PrintStream(os);
+        ps.println("hello world!服务端，您好！");
+        ps.flush();
+    }
+}
+```
+
+#### 小结
+
++ 在以上通信中，服务端会一直等待客户端的消息，如果客户端没有进行消息的发送，服务端将一直进入阻塞状态。
++ 同时服务端是按照行获取消息的，这意味着客户端也必须按照行进行消息的发送，否则服务端将进入等待消息的阻塞状态。
+
+### 3.4 BIO模式下多发和多收消息
+
+在1.3的案例中，*** 只能实现客户端发送消息，客户端接收消息***，并不能实现反复的收消息和反复的发消息，我们只需要在客户端案例中，加上反复按照行发送消息的逻辑即可！案例代码如下
+
+#### 服务端代码如下
+
+```java
+/**
+ * 目标：服务端可以反复的接收消息，客户端可以反复的发送消息
+ */
+public class Server {
+    public static void main(String[] args) {
+        try {
+            System.out.println("---服务端启动---");
+            //1.定义一个ServerSocket对象进行服务端的端口注册
+            ServerSocket ss = new ServerSocket(9999);
+            //2.监听客户端的Socket连接请求
+            Socket socket = ss.accept();
+            //3.从socket管道中需要得到一个字节输入流对象
+            InputStream is = socket.getInputStream();
+            //4.把字节输入流包装成缓冲字符输入流
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String msg;
+            while((msg = br.readLine()) != null){
+                System.out.println("服务端接收到"+msg);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+#### 客户端代码如下
+
+```java
+/**
+ * 客户端
+ */
+public class Client {
+    public static void main(String[] args) throws IOException {
+        //1.创建一个Socket对象请求服务端连接
+        Socket socket = new Socket("127.0.0.1",9999);
+        //2.从Socket对象中获取一个字节输出流
+        OutputStream os = socket.getOutputStream();
+        //3.把字节输出流包装成一个打印流
+        PrintStream ps = new PrintStream(os);
+        Scanner sc = new Scanner(System.in);
+        while(true){
+            System.out.print("请说：");
+            String msg = sc.nextLine();
+            ps.println(msg);
+            ps.flush();
+        }
+    }
+}
+```
+
+#### 小结
+
+本案例中确实可以实现客户端多发多收，但是服务端只能处理一个客户端的请求，因为服务端是单线程的。一次只能与一个客户端进行消息通信。
+
+### 3.5 BIO模式下接收多个客户端
+
+#### 概述
+
+在上述的案例中，一个服务端只能接收一个客户端的通信请求，***那么如果服务端需要处理很多个客户端的消息通信请求应该如何处理呢***，此时我们就需要在服务端引入线程了，也就是说客户端每发起一个请求，服务端就创建一个新的线程来处理这个客户端的请求，这样就实现了一个客户端一个线程的模型，图解模式如下：
+
+![3](img/3.png)
+
+#### 服务端代码如下
+
+```java
+/**
+ * 目标：实现服务端可以同时接受多个客户端的Socket通信需求
+ * 思路：是服务端每接收到一个客户端socket请求对象之后都交给一个独立的线程来处理客户端的数据交互需求
+ */
+public class Server {
+    public static void main(String[] args) {
+        try {
+            // 1.注册端口
+            ServerSocket ss = new ServerSocket(9999);
+            // 2. 定义一个死循环，负责不断接受客户端的socket连接请求
+            while(true){
+                Socket socket = ss.accept();
+                //3. 创建一个独立的线程来处理与这个客户端的通信需求
+                new ServerThreadReader(socket).start();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+public class ServerThreadReader extends Thread {
+
+    private Socket socket;
+
+    public ServerThreadReader(Socket socket){
+        this.socket = socket;
+    }
+
+    @Override
+    public void run() {
+        //从socket对象中得到一个字节输入流
+        try {
+            InputStream is = socket.getInputStream();
+            //使用字符输入流包装字节输入流
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String msg;
+            while((msg = br.readLine()) != null){
+                System.out.println(msg);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+
+
+#### 客户端代码如下
+
+```java
+/**
+ * 客户端
+ */
+public class Client {
+    public static void main(String[] args) {
+        try {
+            //1.请求与服务端的Socket对象链接
+            Socket socket = new Socket("127.0.0.1",9999);
+            //2.得到一个打印流
+            PrintStream ps = new PrintStream(socket.getOutputStream());
+            //3.使用循环不断发送消息给服务端接收
+            Scanner sc = new Scanner(System.in);
+            while(true){
+                System.out.print("请说：");
+                String msg = sc.nextLine();
+                ps.println(msg);
+                ps.flush();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+
+
+#### 小结
+
++ 每个Socket接收到，都会创建一个线程，线程的竞争、切换上下文影响性能；
+
++ 每个线程都会占用栈空间和CPU资源；
+
++ 并不是每个socket都进行IO操作，无意义的线程处理；  
+
++ 客户端的并发访问增加时。服务端将呈现1:1的线程开销，访问量越大，系统将发生线程栈溢出，线程创建失败，最终导致进程宕机或者僵死，从而不能对外提供服务。
+
+### 3.6 伪异步I/O编程
+
+#### 概述
+
+在上述案例中：客户端的并发访问增加时。服务端将呈现1:1的线程开销，访问量越大，系统将发生线程栈溢出，线程创建失败，最终导致进程宕机或者僵死，从而不能对外提供服务。
+
+接下来我们采用一个伪异步I/O的通信框架，采用线程池和任务队列实现，当客户端接入时，将客户端的Socket封装成一个Task(该任务实现java.lang.Runnable线程任务接口)交给后端的线程池中进行处理。JDK的线程池维护一个消息队列和N个活跃的线程，对消息队列中Socket任务进行处理，由于线程池可以设置消息队列的大小和最大线程数，因此，它的资源占用是可控的，无论多少个客户端并发访问，都不会导致资源的耗尽和宕机。
+
+![6](img/6.png)
+
+#### 服务端代码
+
+```java
+/**
+ *  目标：开发实现伪异步通信架构
+ */
+public class Server {
+    public static void main(String[] args) {
+        try {
+            //1.注册端口
+            ServerSocket ss = new ServerSocket(9999);
+            //2.定义一个循环接收客户端的连接请求
+            //初始化一个线程池对象
+            HandlerSocketServerPool pool = new HandlerSocketServerPool(6,10);
+            while (true){
+                Socket socket = ss.accept();
+                //3. 把socket对象交给一个线程池进行处理
+                // 把socket封装成一个任务对象交给线程池处理
+                Runnable target = new ServerRunnableTarget(socket);
+                pool.execute(target);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+}
+public class HandlerSocketServerPool {
+    //1.创建一个线程池的成员变量用于存储一个线程的对象
+    private ExecutorService executorService;
+
+    /**
+     *  2.创建这个类的对象的时候就需要初始化对象
+     *  public ThreadPoolExecutor(int corePoolSize,
+     *                               int maximumPoolSize,
+     *                               long keepAliveTime,
+     *                               TimeUnit unit,
+     *                               BlockingQueue<Runnable> workQueue)
+     */
+    public HandlerSocketServerPool(int maxThreadNum, int queueSize){
+        executorService = new ThreadPoolExecutor(3,maxThreadNum,120
+                , TimeUnit.SECONDS,new ArrayBlockingQueue<Runnable>(queueSize));
+    }
+
+    /**
+     *  3.提供一个方法来提交任务给线程池的任务队列来暂存，等着线程池来处理
+     */
+    public void execute(Runnable target){
+        executorService.execute(target);
+    }
+}
+public class ServerRunnableTarget implements Runnable{
+    private Socket socket;
+
+    public ServerRunnableTarget(Socket socket){
+        this.socket = socket;
+    }
+    @Override
+    public void run() {
+        //处理接收到的客户端Socket通信需求
+        try {
+            //从socket对象中得到一个字节输入流
+            InputStream is = socket.getInputStream();
+            //使用字符输入流包装字节输入流
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String msg;
+            while((msg = br.readLine()) != null){
+                System.out.println(msg);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+#### 客户端代码
+
+```java
+/**
+ * 客户端
+ */
+public class Client {
+    public static void main(String[] args) {
+        try {
+            //1.请求与服务端的Socket对象链接
+            Socket socket = new Socket("127.0.0.1",9999);
+            //2.得到一个打印流
+            PrintStream ps = new PrintStream(socket.getOutputStream());
+            //3.使用循环不断发送消息给服务端接收
+            Scanner sc = new Scanner(System.in);
+            while(true){
+                System.out.print("请说：");
+                String msg = sc.nextLine();
+                ps.println(msg);
+                ps.flush();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+
+#### 小结
+
++ 伪异步io采用了线程池实现，因此避免了为每个请求创建一个独立线程造成线程资源耗尽的问题，但由于底层依然是采用的同步阻塞模型，因此无法从根本上解决问题。
+
++ 如果单个消息处理的缓慢，或者服务器线程池中的全部线程都被阻塞，那么后续socket的i/o消息都将在队列中排队。新的Socket请求将被拒绝，客户端会发生大量连接超时。
+
+### 3.7 基于BIO形式下的文件上传
+
+#### 目标
+
+支持任意类型文件形式的上传
+
+#### 服务端开发
+
+```java
+/**
+ *  目标：服务端开发，可以实现接收客户端的任意类型文件，并保存到服务端磁盘
+ */
+public class Server {
+    public static void main(String[] args) {
+        try{
+            ServerSocket ss = new ServerSocket(8888);
+            while(true){
+                Socket socket = ss.accept();
+                // 交给一个独立的线程来处理与客户端的文件通信需求
+                new ServerReaderThread(socket).start();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+public class ServerReaderThread extends Thread{
+    private Socket socket;
+
+    public ServerReaderThread(Socket socket){
+        this.socket = socket;
+    }
+
+    @Override
+    public void run() {
+        try{
+            // 1. 得到一个数据输入流读取客户端发送的数据
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            // 2. 读取客户端发送过来的文件类型
+            String suffix = dis.readUTF();
+            System.out.println("服务端已经成功接收到了文件类型"+suffix);
+            // 3. 定义一个字节输出管道负责把客户端发来的文件数据写出去
+            OutputStream os = new FileOutputStream("F:\\myDoc\\2024.4\\Study\\IO\\server\\"+ UUID.randomUUID().toString()+suffix);
+            // 4. 从数据输入流中读取文件数据写出到字节输出流中去
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = dis.read(buffer)) > 0) {
+                os.write(buffer,0,len);
+            }
+            os.close();
+            System.out.println("服务端接收文件并保存成功！");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+#### 客户端开发
+
+```java
+/**
+ *  目标：实现客户端上传任意类型的文件数据给服务端保存起来
+ */
+public class Client {
+    public static void main(String[] args) {
+        try(InputStream is = new FileInputStream("C:\\Users\\Lenovo\\Desktop\\data.txt");){
+            // 1. 请求与服务端的socket连接
+            Socket socket = new Socket("127.0.0.1",8888);
+            // 2. 把字节输出流包装成一个数据输出流
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            // 3. 先发送上传文件的后缀给服务端
+            dos.writeUTF(".txt");
+            // 4. 把文件数据发送给服务端进行接收
+            byte[] buffer = new byte[1024];
+            int len;
+            while((len = is.read(buffer)) > 0){
+                dos.write(buffer,0,len);
+            }
+            dos.flush();
+            socket.shutdownOutput();//通知服务端文件发送完毕
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+#### 小结
+
+客户端怎么发，服务端就怎么接收
+
+### 3.9 Java BIO模式下的端口转发思想
+
+需求：需要实现一个客户端的消息可以发送给所有的客户端去接收。（群聊实现）
+
+![7](img/7.png)
+
+#### 服务端开发
+
+```java
+/**
+ *  目标：BIO模式下的端口转发思想-服务端实现
+ *
+ *  服务端实现的需求
+ *      1.注册端口
+ *      2.接收客户端的socket连接，交给一个独立的线程来处理
+ *      3.把当前连接的客户端socket存入到一个在线socket集合中保存
+ *      4.接收客户端的消息，然后推送给当前所有在线的socket接收
+ */
+public class Server {
+    //定义一个静态集合
+    public static List<Socket> allSocketOnline = new ArrayList<>();
+    public static void main(String[] args) {
+        try{
+            ServerSocket ss = new ServerSocket(9999);
+            while(true){
+                Socket socket = ss.accept();
+                //把登录客户端socket存入到一个在线集合中去
+                allSocketOnline.add(socket);
+                //为当前登录成功的socket分配一个独立的线程来处理与之通信
+                new ServerReaderThread(socket).start();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}
+
+public class ServerReaderThread extends Thread{
+    private Socket socket;
+
+    public ServerReaderThread(Socket socket){
+        this.socket = socket;
+    }
+    @Override
+    public void run() {
+        try{
+            //1.从socket中获取当前客户端的输入流
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String msg;
+            while((msg = br.readLine()) != null){
+                //2.服务端接收到了客户端的消息之后，是需要推送给当前所有的在线socket
+                sendMsgToAllClient(msg);
+            }
+        }catch (Exception e){
+            System.out.println("当前有人下线！");
+            //从在线socket集合中移除本socket
+            Server.allSocketOnline.remove(socket);
+        }
+    }
+
+    /**
+     * 把当前客户端发来的消息推送给全部在线的socket
+     * @param msg
+     */
+    private void sendMsgToAllClient(String msg) throws IOException {
+        for (Socket sk:Server.allSocketOnline){
+            PrintStream ps = new PrintStream(sk.getOutputStream());
+            ps.println(msg);
+            ps.flush();
+        }
+    }
+}
+```
+
+### 3.10 基于BIO模式下即时通信
+
+基于BIO模式下的即时通信，我们需要解决客户端到客户端的通信，也就是需要实现客户端与客户端的端口消息转发逻辑。
+
+#### 项目功能演示
+
+######  项目案例说明
+
+本项目案例为即时通信的软件项目，适合基础加强的大案例，具备综合性。学习本项目案例至少需要具备如下Java SE技术点:
+
+- Java 面向对象设计，语法设计。
+- 多线程技术。
+- IO流技术。
+- 网络通信相关技术。
+- 集合框架。
+- 项目开发思维。
+- Java 常用 api 使用。
+
+##### 功能清单简单说明：
+
+**1.客户端登陆功能**
+
+可以启动客户端进行登录，客户端登陆只需要输入用户名和服务端ip地址即可。
+		**2.在线人数实时更新。**
+
+客户端用户户登陆以后，需要同步更新所有客户端的联系人信息栏。
+		**3.离线人数更新**
+
+检测到有客户端下线后，需要同步更新所有客户端的联系人信息栏。
+		**4.群聊**
+
+任意一个客户端的消息，可以推送给当前所有客户端接收。
+		**5.私聊**
+
+可以选择某个员工，点击私聊按钮，然后发出的消息可以被该客户端单独接收。
+		**6.@消息**
+
+可以选择某个员工，然后发出的消息可以@该用户，但是其他所有人都能
+		**7.消息用户和消息时间点**
+
+服务端可以实时记录该用户的消息时间点，然后进行消息的多路转发或者选择。
+
+##### 项目启动与演示
+
+**项目代码结构演示**
+
+![11](img/11.png)
+
+1.首先需要启动服务端，点击ServerChat类直接右键启动，显示服务端启动成功！
+
+2.其次，点击客户端类ClientChat类，在弹出的方框中输入服务端的ip和当前客户端的昵称
+
+![12](img/12.png)
+
+3.登陆进入后的聊天界面如下，即可进行相关操作。
+
++ 如果直接点击发送，默认发送群聊消息
+  如果选中右侧在线列表某个用户，默认发送@消息
+
++ 如果选中右侧在线列表某个用户，然后选择右下侧私聊按钮默，认发送私聊消息。
+
+![13](img/13.png)
+
+![14](img/14.png)
+
+##### 技术选型分析
+
+本项目案例涉及到Java基础加强的案例，具体涉及到的技术点如下：
+
+- Java 面向对象设计，语法设计。
+
+- 多线程技术。
+
+- IO流技术。
+
+- 网络通信相关技术。
+
+- 集合框架。
+
+- 项目开发思维。
+
+- Java 常用 api 使用。
+
+  ……
+
+#### 服务端设计
+
+##### 服务端接收多个客户端逻辑
+
+###### 目标
+
+服务端需要接收多个客户端的接入。
+
+###### 实现步骤
+
++ 1.服务端需要接收多个客户端，目前我们采取的策略是一个客户端对应一个服务端线程。
+
++ 2.服务端除了要注册端口以外，还需要为每个客户端分配一个独立线程处理与之通信。
+
+###### 代码实现
+
++ 服务端主体代码，主要进行端口注册，和接收客户端，分配线程处理该客户端请求
+
+```java
+public class ServerChat {
+    
+    /** 定义一个集合存放所有在线的socket  */
+	public static Map<Socket, String> onLineSockets = new HashMap<>();
+
+   public static void main(String[] args) {
+      try {
+         /** 1.注册端口   */
+         ServerSocket serverSocket = new ServerSocket(Constants.PORT);
+
+         /** 2.循环一直等待所有可能的客户端连接 */
+         while(true){
+            Socket socket = serverSocket.accept();
+            /**3. 把客户端的socket管道单独配置一个线程来处理 */
+            new ServerReader(socket).start();
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+   }
+}
+```
+
++ 服务端分配的独立线程类负责处理该客户端Socket的管道请求。
+
+```java
+class ServerReader extends Thread {
+   private Socket socket;
+   public ServerReader(Socket socket) {
+      this.socket = socket;
+   }
+   @Override
+   public void run() {
+      try {
+       
+      } catch (Exception e) {
+            e.printStackTrace();
+      }
+   }
+}
+```
+
++ 常量包负责做端口配置
+
+```java
+public class Constants {
+   /** 常量 */
+   public static final int PORT = 7778 ;
+
+}
+```
+
+###### 小结
+
+ 本节实现了服务端可以接收多个客户端请求。
+
+##### 服务端接收登陆消息以及监测离线
+
+###### 目标
+
+在上节我们实现了服务端可以接收多个客户端，然后服务端可以接收多个客户端连接，接下来我们要接收客户端的登陆消息。
+
+###### 实现步骤
+
++ 需要在服务端处理客户端的线程的登陆消息。
+
++ 需要注意的是，服务端需要接收客户端的消息可能有很多种。
+
+  + 分别是登陆消息，群聊消息，私聊消息 和@消息。
+
+  + 这里需要约定如果客户端发送消息之前需要先发送消息的类型，类型我们使用信号值标志（1，2，3）。
+
+    + 1代表接收的是登陆消息
+
+    + 2代表群发| @消息
+
+    + 3代表了私聊消息
+
++ 服务端的线程中有异常校验机制，一旦发现客户端下线会在异常机制中处理，然后移除当前客户端用户，把最新的用户列表发回给全部客户端进行在线人数更新。
+
+###### 代码实现
+
+```java
+public class ServerReader extends Thread {
+	private Socket socket;
+	public ServerReader(Socket socket) {
+		this.socket = socket;
+	}
+
+	@Override
+	public void run() {
+		DataInputStream dis = null;
+		try {
+			dis = new DataInputStream(socket.getInputStream());
+			/** 1.循环一直等待客户端的消息 */
+			while(true){
+				/** 2.读取当前的消息类型 ：登录,群发,私聊 , @消息 */
+				int flag = dis.readInt();
+				if(flag == 1){
+					/** 先将当前登录的客户端socket存到在线人数的socket集合中   */
+					String name = dis.readUTF() ;
+					System.out.println(name+"---->"+socket.getRemoteSocketAddress());
+					ServerChat.onLineSockets.put(socket, name);
+				}
+				writeMsg(flag,dis);
+			}
+		} catch (Exception e) {
+			System.out.println("--有人下线了--");
+			// 从在线人数中将当前socket移出去  
+			ServerChat.onLineSockets.remove(socket);
+			try {
+				// 从新更新在线人数并发给所有客户端 
+				writeMsg(1,dis);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+
+	}
+
+	private void writeMsg(int flag, DataInputStream dis) throws Exception {
+        // DataOutputStream dos = new DataOutputStream(socket.getOutputStream()); 
+		// 定义一个变量存放最终的消息形式 
+		String msg = null ;
+		if(flag == 1){
+			/** 读取所有在线人数发给所有客户端去更新自己的在线人数列表 */
+			/** onlineNames = [波仔,zhangsan,波妞]*/
+			StringBuilder rs = new StringBuilder();
+			Collection<String> onlineNames = ServerChat.onLineSockets.values();
+			// 判断是否存在在线人数 
+			if(onlineNames != null && onlineNames.size() > 0){
+				for(String name : onlineNames){
+					rs.append(name+ Constants.SPILIT);
+				}
+				// 波仔003197♣♣㏘♣④④♣zhangsan003197♣♣㏘♣④④♣波妞003197♣♣㏘♣④④♣
+				// 去掉最后的一个分隔符 
+				msg = rs.substring(0, rs.lastIndexOf(Constants.SPILIT));
+
+				/** 将消息发送给所有的客户端 */
+				sendMsgToAll(flag,msg);
+			}
+		}else if(flag == 2 || flag == 3){
+			
+			}
+		}
+	}
+	
+	private void sendMsgToAll(int flag, String msg) throws Exception {
+		// 拿到所有的在线socket管道 给这些管道写出消息
+		Set<Socket> allOnLineSockets = ServerChat.onLineSockets.keySet();
+		for(Socket sk :  allOnLineSockets){
+			DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+			dos.writeInt(flag); // 消息类型
+			dos.writeUTF(msg);
+			dos.flush();
+		}
+	}
+}
+```
+
+###### 小结
+
+此处实现了接收客户端的登陆消息，然后提取当前在线的全部的用户名称和当前登陆的用户名称发送给全部在线用户更新自己的在线人数列表。
+
+##### 服务端接收群聊消息
+
+###### 目标
+
+在上节实现了接收客户端的登陆消息，然后提取当前在线的全部的用户名称和当前登陆的用户名称发送给全部在线用户更新自己的在线人数列表。接下来要接收客户端发来的群聊消息推送给当前在线的所有客户端
+
+###### 实现步骤
+
++ 接下来要接收客户端发来的群聊消息。
+
++ 需要注意的是，服务端需要接收客户端的消息可能有很多种。
+
+  + 分别是登陆消息，群聊消息，私聊消息 和@消息。
+
+  + 这里需要约定如果客户端发送消息之前需要先发送消息的类型，类型我们使用信号值标志（1，2，3）。
+
+    + 1代表接收的是登陆消息
+
+    + 2代表群发| @消息
+
+    + 3代表了私聊消息
+
+###### 代码实现
+
+```java
+public class ServerReader extends Thread {
+	private Socket socket;
+	public ServerReader(Socket socket) {
+		this.socket = socket;
+	}
+
+	@Override
+	public void run() {
+		DataInputStream dis = null;
+		try {
+			dis = new DataInputStream(socket.getInputStream());
+			/** 1.循环一直等待客户端的消息 */
+			while(true){
+				/** 2.读取当前的消息类型 ：登录,群发,私聊 , @消息 */
+				int flag = dis.readInt();
+				if(flag == 1){
+					/** 先将当前登录的客户端socket存到在线人数的socket集合中   */
+					String name = dis.readUTF() ;
+					System.out.println(name+"---->"+socket.getRemoteSocketAddress());
+					ServerChat.onLineSockets.put(socket, name);
+				}
+				writeMsg(flag,dis);
+			}
+		} catch (Exception e) {
+			System.out.println("--有人下线了--");
+			// 从在线人数中将当前socket移出去  
+			ServerChat.onLineSockets.remove(socket);
+			try {
+				// 从新更新在线人数并发给所有客户端 
+				writeMsg(1,dis);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+
+	}
+
+	private void writeMsg(int flag, DataInputStream dis) throws Exception {
+        // DataOutputStream dos = new DataOutputStream(socket.getOutputStream()); 
+		// 定义一个变量存放最终的消息形式 
+		String msg = null ;
+		if(flag == 1){
+			/** 读取所有在线人数发给所有客户端去更新自己的在线人数列表 */
+			/** onlineNames = [波仔,zhangsan,波妞]*/
+			StringBuilder rs = new StringBuilder();
+			Collection<String> onlineNames = ServerChat.onLineSockets.values();
+			// 判断是否存在在线人数 
+			if(onlineNames != null && onlineNames.size() > 0){
+				for(String name : onlineNames){
+					rs.append(name+ Constants.SPILIT);
+				}
+				// 波仔003197♣♣㏘♣④④♣zhangsan003197♣♣㏘♣④④♣波妞003197♣♣㏘♣④④♣
+				// 去掉最后的一个分隔符 
+				msg = rs.substring(0, rs.lastIndexOf(Constants.SPILIT));
+
+				/** 将消息发送给所有的客户端 */
+				sendMsgToAll(flag,msg);
+			}
+		}else if(flag == 2 || flag == 3){
+			// 读到消息  群发的 或者 @消息
+			String newMsg = dis.readUTF() ; // 消息
+			// 得到发件人 
+			String sendName = ServerChat.onLineSockets.get(socket);
+	
+			// 内容
+			StringBuilder msgFinal = new StringBuilder();
+			// 时间  
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss EEE");
+			if(flag == 2){
+				msgFinal.append(sendName).append("  ").append(sdf.format(System.currentTimeMillis())).append("\r\n");
+				msgFinal.append("    ").append(newMsg).append("\r\n");
+				sendMsgToAll(flag,msgFinal.toString());
+			}else if(flag == 3){
+	
+			}
+		}
+	}
+	
+
+	private void sendMsgToAll(int flag, String msg) throws Exception {
+		// 拿到所有的在线socket管道 给这些管道写出消息
+		Set<Socket> allOnLineSockets = ServerChat.onLineSockets.keySet();
+		for(Socket sk :  allOnLineSockets){
+			DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+			dos.writeInt(flag); // 消息类型
+			dos.writeUTF(msg);
+			dos.flush();
+		}
+	}
+}
+```
+
+###### 小结
+
+此处根据消息的类型判断为群聊消息，然后把群聊消息推送给当前在线的所有客户端。
+
+##### 服务端接收私聊消息
+
+###### 目标
+
+在上节我们接收了客户端发来的群聊消息推送给当前在线的所有客户端，接下来要解决私聊消息的推送逻辑
+
+###### 实现步骤
+
++ 解决私聊消息的推送逻辑，私聊消息需要知道推送给某个具体的客户端
++ 我们可以接收到客户端发来的私聊用户名称，根据用户名称定位该用户的Socket管道，然后单独推送消息给该Socket管道。
+
++ 需要注意的是，服务端需要接收客户端的消息可能有很多种。
+
+  + 分别是登陆消息，群聊消息，私聊消息 和@消息。
+
+  + 这里需要约定如果客户端发送消息之前需要先发送消息的类型，类型我们使用信号值标志（1，2，3）。
+
+    + 1代表接收的是登陆消息
+
+    + 2代表群发| @消息
+
+    + 3代表了私聊消息
+
+###### 代码实现
+
+```java
+public class ServerReader extends Thread {
+	private Socket socket;
+	public ServerReader(Socket socket) {
+		this.socket = socket;
+	}
+
+	@Override
+	public void run() {
+		DataInputStream dis = null;
+		try {
+			dis = new DataInputStream(socket.getInputStream());
+			/** 1.循环一直等待客户端的消息 */
+			while(true){
+				/** 2.读取当前的消息类型 ：登录,群发,私聊 , @消息 */
+				int flag = dis.readInt();
+				if(flag == 1){
+					/** 先将当前登录的客户端socket存到在线人数的socket集合中   */
+					String name = dis.readUTF() ;
+					System.out.println(name+"---->"+socket.getRemoteSocketAddress());
+					ServerChat.onLineSockets.put(socket, name);
+				}
+				writeMsg(flag,dis);
+			}
+		} catch (Exception e) {
+			System.out.println("--有人下线了--");
+			// 从在线人数中将当前socket移出去  
+			ServerChat.onLineSockets.remove(socket);
+			try {
+				// 从新更新在线人数并发给所有客户端 
+				writeMsg(1,dis);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+
+	}
+
+	private void writeMsg(int flag, DataInputStream dis) throws Exception {
+        // DataOutputStream dos = new DataOutputStream(socket.getOutputStream()); 
+		// 定义一个变量存放最终的消息形式 
+		String msg = null ;
+		if(flag == 1){
+			/** 读取所有在线人数发给所有客户端去更新自己的在线人数列表 */
+			/** onlineNames = [波仔,zhangsan,波妞]*/
+			StringBuilder rs = new StringBuilder();
+			Collection<String> onlineNames = ServerChat.onLineSockets.values();
+			// 判断是否存在在线人数 
+			if(onlineNames != null && onlineNames.size() > 0){
+				for(String name : onlineNames){
+					rs.append(name+ Constants.SPILIT);
+				}
+				// 波仔003197♣♣㏘♣④④♣zhangsan003197♣♣㏘♣④④♣波妞003197♣♣㏘♣④④♣
+				// 去掉最后的一个分隔符 
+				msg = rs.substring(0, rs.lastIndexOf(Constants.SPILIT));
+
+				/** 将消息发送给所有的客户端 */
+				sendMsgToAll(flag,msg);
+			}
+		}else if(flag == 2 || flag == 3){
+			// 读到消息  群发的 或者 @消息
+			String newMsg = dis.readUTF() ; // 消息
+			// 得到发件人 
+			String sendName = ServerChat.onLineSockets.get(socket);
+	
+			// 内容
+			StringBuilder msgFinal = new StringBuilder();
+			// 时间  
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss EEE");
+			if(flag == 2){
+				msgFinal.append(sendName).append("  ").append(sdf.format(System.currentTimeMillis())).append("\r\n");
+				msgFinal.append("    ").append(newMsg).append("\r\n");
+				sendMsgToAll(flag,msgFinal.toString());
+			}else if(flag == 3){
+			msgFinal.append(sendName).append("  ").append(sdf.format(System.currentTimeMillis())).append("对您私发\r\n");
+				msgFinal.append("    ").append(newMsg).append("\r\n");
+				// 私发 
+				// 得到给谁私发 
+				String destName = dis.readUTF();
+				sendMsgToOne(destName,msgFinal.toString());
+			}
+		}
+	}
+	/**
+	 * @param destName 对谁私发 
+	 * @param msg 发的消息内容 
+	 * @throws Exception
+	 */
+	private void sendMsgToOne(String destName, String msg) throws Exception {
+		// 拿到所有的在线socket管道 给这些管道写出消息
+		Set<Socket> allOnLineSockets = ServerChat.onLineSockets.keySet();
+		for(Socket sk :  allOnLineSockets){
+			// 得到当前需要私发的socket 
+			// 只对这个名字对应的socket私发消息
+			if(ServerChat.onLineSockets.get(sk).trim().equals(destName)){
+				DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+				dos.writeInt(2); // 消息类型
+				dos.writeUTF(msg);
+				dos.flush();
+			}
+		}
+
+	}
+	
+
+	private void sendMsgToAll(int flag, String msg) throws Exception {
+		// 拿到所有的在线socket管道 给这些管道写出消息
+		Set<Socket> allOnLineSockets = ServerChat.onLineSockets.keySet();
+		for(Socket sk :  allOnLineSockets){
+			DataOutputStream dos = new DataOutputStream(sk.getOutputStream());
+			dos.writeInt(flag); // 消息类型
+			dos.writeUTF(msg);
+			dos.flush();
+		}
+	}
+}
+```
+
+###### 小结
+
++ 本节我们解决了私聊消息的推送逻辑，私聊消息需要知道推送给某个具体的客户端Socket管道
+
++ 我们可以接收到客户端发来的私聊用户名称，根据用户名称定位该用户的Socket管道，然后单独推送消息给该Socket管道。
+
+#### 客户端设计
+
+##### 启动客户端界面 ,登陆，刷新在线
+
+###### 目标
+
+启动客户端界面，登陆，刷新在线人数列表
+
+###### 实现步骤
+
++ 客户端界面主要是GUI设计，主体页面分为登陆界面和聊天窗口，以及在线用户列表。
+
++ GUI界面读者可以自行复制使用。
+
++ 登陆输入服务端ip和用户名后，要请求与服务端的登陆，然后立即为当前客户端分配一个读线程处理客户端的读数据消息。因为客户端可能随时会接收到服务端那边转发过来的各种即时消息信息。
+
++ 客户端登陆完成，服务端收到登陆的用户名后，会立即发来最新的用户列表给客户端更新。
+
+###### 代码实现
+
+**客户端主体代码：**
+
+```java
+public class ClientChat implements ActionListener {
+   /** 1.设计界面  */
+   private JFrame win = new JFrame();
+   /** 2.消息内容框架 */
+   public JTextArea smsContent =new JTextArea(23 , 50);
+   /** 3.发送消息的框  */
+   private JTextArea smsSend = new JTextArea(4,40);
+   /** 4.在线人数的区域  */
+   /** 存放人的数据 */
+   /** 展示在线人数的窗口 */
+   public JList<String> onLineUsers = new JList<>();
+
+   // 是否私聊按钮
+   private JCheckBox isPrivateBn = new JCheckBox("私聊");
+   // 消息按钮
+   private JButton sendBn  = new JButton("发送");
+
+   // 登录界面
+   private JFrame loginView;
+
+   private JTextField ipEt , nameEt , idEt;
+
+   private Socket socket ;
+
+   public static void main(String[] args) {
+      new ClientChat().initView();
+
+   }
+
+   private void initView() {
+      /** 初始化聊天窗口的界面 */
+      win.setSize(650, 600);
+
+      /** 展示登录界面  */
+      displayLoginView();
+
+      /** 展示聊天界面 */
+      //displayChatView();
+
+   }
+
+   private void displayChatView() {
+
+      JPanel bottomPanel = new JPanel(new BorderLayout());
+      //-----------------------------------------------
+      // 将消息框和按钮 添加到窗口的底端
+      win.add(bottomPanel, BorderLayout.SOUTH);
+      bottomPanel.add(smsSend);
+      JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT));
+      btns.add(sendBn);
+      btns.add(isPrivateBn);
+      bottomPanel.add(btns, BorderLayout.EAST);
+      //-----------------------------------------------
+      // 给发送消息按钮绑定点击事件监听器
+      // 将展示消息区centerPanel添加到窗口的中间
+      smsContent.setBackground(new Color(0xdd,0xdd,0xdd));
+      // 让展示消息区可以滚动。
+      win.add(new JScrollPane(smsContent), BorderLayout.CENTER);
+      smsContent.setEditable(false);
+      //-----------------------------------------------
+      // 用户列表和是否私聊放到窗口的最右边
+      Box rightBox = new Box(BoxLayout.Y_AXIS);
+      onLineUsers.setFixedCellWidth(120);
+      onLineUsers.setVisibleRowCount(13);
+      rightBox.add(new JScrollPane(onLineUsers));
+      win.add(rightBox, BorderLayout.EAST);
+      //-----------------------------------------------
+      // 关闭窗口退出当前程序
+      win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      win.pack();  // swing 加上这句 就可以拥有关闭窗口的功能
+      /** 设置窗口居中,显示出来  */
+      setWindowCenter(win,650,600,true);
+      // 发送按钮绑定点击事件
+      sendBn.addActionListener(this);
+   }
+
+   private void displayLoginView(){
+
+      /** 先让用户进行登录
+       *  服务端ip
+       *  用户名
+       *  id
+       *  */
+      /** 显示一个qq的登录框     */
+      loginView = new JFrame("登录");
+      loginView.setLayout(new GridLayout(3, 1));
+      loginView.setSize(400, 230);
+
+      JPanel ip = new JPanel();
+      JLabel label = new JLabel("   IP:");
+      ip.add(label);
+      ipEt = new JTextField(20);
+      ip.add(ipEt);
+      loginView.add(ip);
+
+      JPanel name = new JPanel();
+      JLabel label1 = new JLabel("姓名:");
+      name.add(label1);
+      nameEt = new JTextField(20);
+      name.add(nameEt);
+      loginView.add(name);
+
+      JPanel btnView = new JPanel();
+      JButton login = new JButton("登陆");
+      btnView.add(login);
+      JButton cancle = new JButton("取消");
+      btnView.add(cancle);
+      loginView.add(btnView);
+      // 关闭窗口退出当前程序
+      loginView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      setWindowCenter(loginView,400,260,true);
+
+      /** 给登录和取消绑定点击事件 */
+      login.addActionListener(this);
+      cancle.addActionListener(this);
+
+   }
+
+   private static void setWindowCenter(JFrame frame, int width , int height, boolean flag) {
+      /** 得到所在系统所在屏幕的宽高 */
+      Dimension ds = frame.getToolkit().getScreenSize();
+
+      /** 拿到电脑的宽 */
+      int width1 = ds.width;
+      /** 高 */
+      int height1 = ds.height ;
+
+      System.out.println(width1 +"*" + height1);
+      /** 设置窗口的左上角坐标 */
+      frame.setLocation(width1/2 - width/2, height1/2 -height/2);
+      frame.setVisible(flag);
+   }
+
+   @Override
+   public void actionPerformed(ActionEvent e) {
+      /** 得到点击的事件源 */
+      JButton btn = (JButton) e.getSource();
+      switch(btn.getText()){
+         case "登陆":
+            String ip = ipEt.getText().toString();
+            String name = nameEt.getText().toString();
+            // 校验参数是否为空
+            // 错误提示
+            String msg = "" ;
+            // 12.1.2.0
+            // \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\
+            if(ip==null || !ip.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}")){
+               msg = "请输入合法的服务端ip地址";
+            }else if(name==null || !name.matches("\\S{1,}")){
+               msg = "姓名必须1个字符以上";
+            }
+
+            if(!msg.equals("")){
+               /** msg有内容说明参数有为空 */
+               // 参数一：弹出放到哪个窗口里面
+               JOptionPane.showMessageDialog(loginView, msg);
+            }else{
+               try {
+                  // 参数都合法了
+                  // 当前登录的用户,去服务端登陆
+                  /** 先把当前用户的名称展示到界面 */
+                  win.setTitle(name);
+                  // 去服务端登陆连接一个socket管道
+                  socket = new Socket(ip, Constants.PORT);
+
+                  //为客户端的socket分配一个线程 专门负责收消息
+                  new ClientReader(this,socket).start();
+
+                  // 带上用户信息过去
+                  DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                  dos.writeInt(1); // 登录消息
+                  dos.writeUTF(name.trim());
+                  dos.flush();
+
+                  // 关系当前窗口 弹出聊天界面
+                  loginView.dispose(); // 登录窗口销毁
+                  displayChatView(); // 展示了聊天窗口了
+
+
+               } catch (Exception e1) {
+                  e1.printStackTrace();
+               }
+            }
+            break;
+         case "取消":
+            /** 退出系统 */
+            System.exit(0);
+            break;
+         case "发送":
+            
+            break;
+
+      }
+
+   }
+}
+```
+
+**客户端socket处理线程：**
+
+```java
+public class ClientReader extends Thread {
+
+   private Socket socket;
+    // 接收客户端界面，方便收到消息后，更新界面数据。
+   private ClientChat clientChat ;
+
+   public ClientReader(ClientChat clientChat, Socket socket) {
+      this.clientChat = clientChat;
+      this.socket = socket;
+   }
+
+   @Override
+   public void run() {
+      try {
+         DataInputStream dis = new DataInputStream(socket.getInputStream());
+         /** 循环一直等待客户端的消息 */
+         while(true){
+            /** 读取当前的消息类型 ：登录,群发,私聊 , @消息 */
+            int flag = dis.readInt();
+            if(flag == 1){
+               // 在线人数消息回来了
+               String nameDatas = dis.readUTF();
+               // 展示到在线人数的界面
+               String[] names = nameDatas.split(Constants.SPILIT);
+
+               clientChat.onLineUsers.setListData(names);
+            }else if(flag == 2){
+              
+            }
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+   }
+}
+```
+
+###### 小结
+
+此处说明了如果启动客户端界面，以及登陆功能后，服务端收到新的登陆消息后，会响应一个在线列表用户回来给客户端更新在线人数！
+
+##### 客户端发送消息逻辑
+
+######  目标
+
+客户端发送群聊消息，@消息，以及私聊消息。
+
+###### 实现步骤
+
+客户端启动后，在聊天界面需要通过发送按钮推送群聊消息，@消息，以及私聊消息。
+
+![](img/14.png)
+
++ 如果直接点击发送，默认发送群聊消息
+
++ 如果选中右侧在线列表某个用户，默认发送@消息
+
++ 如果选中右侧在线列表某个用户，然后选择右下侧私聊按钮默，认发送私聊消息。
+
+###### 代码实现
+
+**客户端主体代码：**
+
+```java
+public class ClientChat implements ActionListener {
+	/** 1.设计界面  */
+	private JFrame win = new JFrame();
+	/** 2.消息内容框架 */
+	public JTextArea smsContent =new JTextArea(23 , 50);
+	/** 3.发送消息的框  */
+	private JTextArea smsSend = new JTextArea(4,40);
+	/** 4.在线人数的区域  */
+	/** 存放人的数据 */
+	/** 展示在线人数的窗口 */
+	public JList<String> onLineUsers = new JList<>();
+
+	// 是否私聊按钮
+	private JCheckBox isPrivateBn = new JCheckBox("私聊");
+	// 消息按钮
+	private JButton sendBn  = new JButton("发送");
+
+	// 登录界面
+	private JFrame loginView;
+
+	private JTextField ipEt , nameEt , idEt;
+
+	private Socket socket ;
+
+	public static void main(String[] args) {
+		new ClientChat().initView();
+
+	}
+
+	private void initView() {
+		/** 初始化聊天窗口的界面 */
+		win.setSize(650, 600);
+
+		/** 展示登录界面  */
+		displayLoginView();
+
+		/** 展示聊天界面 */
+		//displayChatView();
+
+	}
+
+	private void displayChatView() {
+
+		JPanel bottomPanel = new JPanel(new BorderLayout());
+		//-----------------------------------------------
+		// 将消息框和按钮 添加到窗口的底端
+		win.add(bottomPanel, BorderLayout.SOUTH);
+		bottomPanel.add(smsSend);
+		JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		btns.add(sendBn);
+		btns.add(isPrivateBn);
+		bottomPanel.add(btns, BorderLayout.EAST);
+		//-----------------------------------------------
+		// 给发送消息按钮绑定点击事件监听器
+		// 将展示消息区centerPanel添加到窗口的中间
+		smsContent.setBackground(new Color(0xdd,0xdd,0xdd));
+		// 让展示消息区可以滚动。
+		win.add(new JScrollPane(smsContent), BorderLayout.CENTER);
+		smsContent.setEditable(false);
+		//-----------------------------------------------
+		// 用户列表和是否私聊放到窗口的最右边
+		Box rightBox = new Box(BoxLayout.Y_AXIS);
+		onLineUsers.setFixedCellWidth(120);
+		onLineUsers.setVisibleRowCount(13);
+		rightBox.add(new JScrollPane(onLineUsers));
+		win.add(rightBox, BorderLayout.EAST);
+		//-----------------------------------------------
+		// 关闭窗口退出当前程序
+		win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		win.pack();  // swing 加上这句 就可以拥有关闭窗口的功能
+		/** 设置窗口居中,显示出来  */
+		setWindowCenter(win,650,600,true);
+		// 发送按钮绑定点击事件
+		sendBn.addActionListener(this);
+	}
+
+	private void displayLoginView(){
+
+		/** 先让用户进行登录
+		 *  服务端ip
+		 *  用户名
+		 *  id
+		 *  */
+		/** 显示一个qq的登录框     */
+		loginView = new JFrame("登录");
+		loginView.setLayout(new GridLayout(3, 1));
+		loginView.setSize(400, 230);
+
+		JPanel ip = new JPanel();
+		JLabel label = new JLabel("   IP:");
+		ip.add(label);
+		ipEt = new JTextField(20);
+		ip.add(ipEt);
+		loginView.add(ip);
+
+		JPanel name = new JPanel();
+		JLabel label1 = new JLabel("姓名:");
+		name.add(label1);
+		nameEt = new JTextField(20);
+		name.add(nameEt);
+		loginView.add(name);
+
+		JPanel btnView = new JPanel();
+		JButton login = new JButton("登陆");
+		btnView.add(login);
+		JButton cancle = new JButton("取消");
+		btnView.add(cancle);
+		loginView.add(btnView);
+		// 关闭窗口退出当前程序
+		loginView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setWindowCenter(loginView,400,260,true);
+
+		/** 给登录和取消绑定点击事件 */
+		login.addActionListener(this);
+		cancle.addActionListener(this);
+
+	}
+
+	private static void setWindowCenter(JFrame frame, int width , int height, boolean flag) {
+		/** 得到所在系统所在屏幕的宽高 */
+		Dimension ds = frame.getToolkit().getScreenSize();
+
+		/** 拿到电脑的宽 */
+		int width1 = ds.width;
+		/** 高 */
+		int height1 = ds.height ;
+
+		System.out.println(width1 +"*" + height1);
+		/** 设置窗口的左上角坐标 */
+		frame.setLocation(width1/2 - width/2, height1/2 -height/2);
+		frame.setVisible(flag);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		/** 得到点击的事件源 */
+		JButton btn = (JButton) e.getSource();
+		switch(btn.getText()){
+			case "登陆":
+				String ip = ipEt.getText().toString();
+				String name = nameEt.getText().toString();
+				// 校验参数是否为空
+				// 错误提示
+				String msg = "" ;
+				// 12.1.2.0
+				// \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\
+				if(ip==null || !ip.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}")){
+					msg = "请输入合法的服务端ip地址";
+				}else if(name==null || !name.matches("\\S{1,}")){
+					msg = "姓名必须1个字符以上";
+				}
+
+				if(!msg.equals("")){
+					/** msg有内容说明参数有为空 */
+					// 参数一：弹出放到哪个窗口里面
+					JOptionPane.showMessageDialog(loginView, msg);
+				}else{
+					try {
+						// 参数都合法了
+						// 当前登录的用户,去服务端登陆
+						/** 先把当前用户的名称展示到界面 */
+						win.setTitle(name);
+						// 去服务端登陆连接一个socket管道
+						socket = new Socket(ip, Constants.PORT);
+
+						//为客户端的socket分配一个线程 专门负责收消息
+						new ClientReader(this,socket).start();
+
+						// 带上用户信息过去
+						DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+						dos.writeInt(1); // 登录消息
+						dos.writeUTF(name.trim());
+						dos.flush();
+
+						// 关系当前窗口 弹出聊天界面
+						loginView.dispose(); // 登录窗口销毁
+						displayChatView(); // 展示了聊天窗口了
+
+
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+				break;
+			case "取消":
+				/** 退出系统 */
+				System.exit(0);
+				break;
+			case "发送":
+				// 得到发送消息的内容
+				String msgSend = smsSend.getText().toString();
+				if(!msgSend.trim().equals("")){
+					/** 发消息给服务端 */
+					try {
+						// 判断是否对谁发消息
+						String selectName = onLineUsers.getSelectedValue();
+						int flag = 2 ;// 群发 @消息
+						if(selectName!=null&&!selectName.equals("")){
+							msgSend =("@"+selectName+","+msgSend);
+							/** 判断是否选中了私法 */
+							if(isPrivateBn.isSelected()){
+								/** 私发 */
+								flag = 3 ;//私发消息
+							}
+
+						}
+
+						DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+						dos.writeInt(flag); // 群发消息  发送给所有人
+						dos.writeUTF(msgSend);
+						if(flag == 3){
+							// 告诉服务端我对谁私发
+							dos.writeUTF(selectName.trim());
+						}
+						dos.flush();
+
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+
+				}
+				smsSend.setText(null);
+				break;
+
+		}
+
+	}
+}
+```
+
+**客户端socket处理线程：**
+
+```java
+class ClientReader extends Thread {
+
+	private Socket socket;
+	private ClientChat clientChat ;
+
+	public ClientReader(ClientChat clientChat, Socket socket) {
+		this.clientChat = clientChat;
+		this.socket = socket;
+	}
+
+	@Override
+	public void run() {
+		try {
+			DataInputStream dis = new DataInputStream(socket.getInputStream());
+			/** 循环一直等待客户端的消息 */
+			while(true){
+				/** 读取当前的消息类型 ：登录,群发,私聊 , @消息 */
+				int flag = dis.readInt();
+				if(flag == 1){
+					// 在线人数消息回来了
+					String nameDatas = dis.readUTF();
+					// 展示到在线人数的界面
+					String[] names = nameDatas.split(Constants.SPILIT);
+
+					clientChat.onLineUsers.setListData(names);
+				}else if(flag == 2){
+					//群发,私聊 , @消息 都是直接显示的。
+					String msg = dis.readUTF() ;
+					clientChat.smsContent.append(msg);
+					// 让消息界面滚动到底端
+					clientChat.smsContent.setCaretPosition(clientChat.smsContent.getText().length());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
+```
+
+###### 小结
+
++ 此处实现了客户端发送群聊消息，@消息，以及私聊消息。
++ 如果直接点击发送，默认发送群聊消息
++ 如果选中右侧在线列表某个用户，默认发送@消息
++ 如果选中右侧在线列表某个用户，然后选择右下侧私聊按钮默，认发送私聊消息。
+
+### 第四章 Java NIO深入剖析
+
+在讲解利用NIO实现通信架构之前，我们需要先来了解一
+下NIO的基本特点和使用。
+
+#### 4.1 Java NIO 基本介绍
+
++ Java NIO（New IO）也有人称之为 java non-blocking IO是从Java 1.4版本开始引入的一个新的IO API，可以替代标准的Java IO API。NIO与原来的IO有同样的作用和目的，但是使用的方式完全不同，NIO支持**面向缓冲区**的、基于**通道**的IO操作。NIO将以更加高效的方式进行文件的读写操作。NIO可以理解为非阻塞IO,传统的IO的read和write只能阻塞执行，线程在读写IO期间不能干其他事情，比如调用socket.read()时，如果服务器一直没有数据传输过来，线程就一直阻塞，而NIO中可以配置socket为非阻塞模式。
+
++ NIO 相关类都被放在 java.nio 包及子包下，并且对原 java.io 包中的很多类进行改写。
+
++ NIO 有三大核心部分：**Channel( 通道) ，Buffer( 缓冲区), Selector( 选择器)**
+
++ Java NIO 的非阻塞模式，使一个线程从某通道发送请求或者读取数据，但是它仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取，而不是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。 非阻塞写也是如此，一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这个线程同时可以去做别的事情。
+
++ 通俗理解：NIO 是可以做到用一个线程来处理多个操作的。假设有 1000 个请求过来,根据实际情况，可以分配20 或者 80个线程来处理。不像之前的阻塞 IO 那样，非得分配 1000 个。
+
+#### 4.2 NIO 和 BIO 的比较
+
++ BIO 以流的方式处理数据,而 NIO 以块的方式处理数据块 I/O 的效率比流 I/O 高很多
++ BIO 是阻塞的，NIO 则是非阻塞的。
++ BIO 基于字节流和字符流进行操作，而 NIO 基于 Channel(通道)和Buffer(缓冲区)进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。Selector(选择器)用于监听多个通道的事件（比如：连接请求，数据到达等），因此使用单个线程就可以监听多个客户端通道。
+
+|            NIO            |         BIO         |
+| :-----------------------: | :-----------------: |
+|   面向缓冲区（Buffer）    |  面向流（Stream）   |
+| 非阻塞（Non Blocking IO） | 阻塞IO(Blocking IO) |
+|    选择器（Selectors）    |                     |
+
+#### 4.3 NIO 三大核心原理示意图
+
+NIO 有三大核心部分：**Channel( 通道) ，Buffer( 缓冲区), Selector( 选择器)**
+
+##### Buffer缓冲区
+
+缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。相比较直接对数组的操作，Buffer API更加容易操作和管理。
+
+##### Channel（通道）
+
+Java NIO的通道类似流，但又有些不同：既可以从通道中读取数据，又可以写数据到通道。但流的（input或output)读写通常是单向的。 通道可以非阻塞读取和写入通道，通道可以支持读取或写入缓冲区，也支持异步地读写。
+
+##### Selector选择器
+
+Selector是 一个Java NIO组件，可以能够检查一个或多个 NIO 通道，并确定哪些通道已经准备好进行读取或写入。这样，一个单独的线程可以管理多个channel，从而管理多个网络连接，提高效率。
+
+![15](img/15.png)
+
++ 每个 channel 都会对应一个 Buffer
++ 一个线程对应Selector ， 一个Selector对应多个 channel(连接)
++ 程序切换到哪个 channel 是由事件决定的
++ Selector 会根据不同的事件，在各个通道上切换
++ Buffer 就是一个内存块 ， 底层是一个数组
++ 数据的读取写入是通过 Buffer完成的 , BIO 中要么是输入流，或者是输出流, 不能双向，但是 NIO 的 Buffer 是可以读也可以写。
++ Java NIO系统的核心在于：通道(Channel)和缓冲区 (Buffer)。通道表示打开到 IO 设备(例如：文件、 套接字)的连接。若需要使用 NIO 系统，需要获取 用于连接 IO 设备的通道以及用于容纳数据的缓冲 区。然后操作缓冲区，对数据进行处理。简而言之，Channel 负责传输， Buffer 负责存取数据。
+
+#### 4.4 NIO核心一：缓冲区(Buffer)
+
+##### 缓冲区（Buffer）
+
+一个用于特定基本数据类型的容器。由 java.nio 包定义的，所有缓冲区 都是 Buffer 抽象类的子类.。Java NIO 中的 Buffer 主要用于与NIO 通道进行 交互，数据是从通道读入缓冲区，从缓冲区写入通道中的。
+
+![16](img/16.png)
+
+##### Buffer 类及其子类
+
+**Buffer**就像一个数组，可以保存多个相同类型的数据。根据
+数据类型不同 ，有以下 Buffer 常用子类： 
+
++ ByteBuffer 
++ CharBuffer 
++ ShortBuffer 
++ IntBuffer 
++ LongBuffer 
++ FloatBuffer 
++ DoubleBuffer 
+
+上述 Buffer 类他们都采用相似的方法进行管理数据，只是各自 管理的数据类型不同而已。都是通过如下方法获取一个 Buffer 对象：
+
+```
+static XxxBuffer allocate(int capacity) : 创建一个容量为capacity 的 XxxBuffer 对象
+```
+
+##### 缓冲区的基本属性
+
+Buffer 中的重要概念： 
+
++ **容量 (capacity)** ：作为一个内存块，Buffer具有一定的固定大小，也称为"容量"，缓冲区容量不能为负，并且创建后不能更改。 
++ **限制 (limit)**：表示缓冲区中可以操作数据的大小（limit 后数据不能进行读写）。缓冲区的限制不能为负，并且不能大于其容量。 写入模式，限制等于buffer的容量。读取模式下，limit等于写入的数据量。
++ **位置 (position)**：下一个要读取或写入的数据的索引。缓冲区的位置不能为 负，并且不能大于其限制 
++ **标记 (mark)与重置 (reset)**：标记是一个索引，通过 Buffer 中的 mark() 方法 指定 Buffer 中一个特定的 position，之后可以通过调用 reset() 方法恢复到这 个 position.
+  **标记、位置、限制、容量遵守以下不变式：0 <= mark <= position <= limit <= capacity**
++ **图示**
++ ![17](img/17.png)
+
+**Buffer常见方法**
+
+```
+Buffer clear() 清空缓冲区并返回对缓冲区的引用
+Buffer flip() 为 将缓冲区的界限设置为当前位置，并将当前位置充值为 0
+int capacity() 返回 Buffer 的 capacity 大小
+boolean hasRemaining() 判断缓冲区中是否还有元素
+int limit() 返回 Buffer 的界限(limit) 的位置
+Buffer limit(int n) 将设置缓冲区界限为 n,并返回一个具有新 limit 的缓冲区对象
+Buffer mark() 对缓冲区设置标记
+int position() 返回缓冲区的当前位置 position
+Buffer position(int n) 将设置缓冲区的当前位置为 n，
+并返回修改后的 Buffer 对象
+int remaining() 返回 position 和 limit 之间的元素个数
+Buffer reset() 将位置 position 转到以前设置的mark 
+所在的位置
+Buffer rewind() 将位置设为为 0， 取消设置的 mark
+```
+
+**缓冲区的数据操作**
+
+```
+Buffer 所有子类提供了两个用于数据操作的方法：get()put() 方法取获取 Buffer中的数据
+get() ：读取单个字节
+get(byte[] dst)：批量读取多个字节到 dst 中
+get(int index)：读取指定索引位置的字节(不会移动 position)
+
+放入数据到 Buffer 中
+put(byte b)：将给定单个字节写入缓冲区的当前位置
+put(byte[] src)：将 src 中的字节写入缓冲区的当前位置
+put(int index, byte b)：将指定字节写入缓冲区的索引位置(不会移动 position)
+```
+
+**使用Buffer读写数据一般遵循以下四个步骤：**
+
+1. 写入数据到Buffer
+
+2. 调用flip()方法，转换为读取模式 
+
+3. 从Buffer中读取数据 
+
+4. 调用buffer.clear()方法或者buffer.compact()方法清除缓冲区
