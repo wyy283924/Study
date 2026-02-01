@@ -1,0 +1,4 @@
+library/017-AI/近屿/aigc_learning_path/aigc_tm_level/A2/A2.1大模型提示工程/gsm8k_instance.pkl filter=lfs diff=lfs merge=lfs -text
+library/017-AI/近屿/大模型Python基础/大模型Python基础（二）/files/1.mov filter=lfs diff=lfs merge=lfs -text
+*.pkl filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
